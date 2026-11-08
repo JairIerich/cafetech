@@ -1,0 +1,29 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: cafetech-mysql
+    ports:
+      - "3307:3306"   # 3306 do host ja esta ocupado pelo MySQL local
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cafetech
+      MYSQL_USER: cafetech
+      MYSQL_PASSWORD: cafetech
+    volumes:
+      - cafetech-mysql-data:/var/lib/mysql
+
+  postgres:
+    image: postgres:16
+    container_name: cafetech-postgres
+    ports:
+      - "5433:5432"   # 5432 do host ja esta ocupado pelo PostgreSQL local
+    environment:
+      POSTGRES_DB: cafetech
+      POSTGRES_USER: cafetech
+      POSTGRES_PASSWORD: cafetech
+    volumes:
+      - cafetech-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  cafetech-mysql-data:
+  cafetech-postgres-data:
