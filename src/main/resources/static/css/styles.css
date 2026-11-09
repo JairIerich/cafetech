@@ -1,0 +1,289 @@
+/* ==================
+   Cafetech - estilos
+   ================== */
+:root {
+  --laranja: #f77f00;
+  --laranja-escuro: #d96c00;
+  --marrom: #5e3023;
+  --marrom-escuro: #3d1f16;
+  --creme: #faf4ec;
+  --branco: #ffffff;
+  --borda: #e8ddd0;
+  --texto: #3a332d;
+  --texto-suave: #8a7f74;
+  --verde: #2a9d34;
+  --verde-claro: #e0f2e1;
+  --verde-texto: #1b7a22;
+  --amarelo-claro: #fff3cd;
+  --amarelo-texto: #8a6d00;
+  --azul-claro: #d6eaff;
+  --azul-texto: #0a5fa8;
+  --vermelho: #d62828;
+  --sombra: 0 2px 8px rgba(94, 48, 35, .08);
+  --raio: 10px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", "Helvetica Neue", sans-serif; }
+
+body {
+  background: var(--creme);
+  color: var(--texto);
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ---------- Sidebar ---------- */
+aside {
+  width: 230px;
+  background: var(--marrom);
+  color: #fff;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  flex-shrink: 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, .12);
+  margin-bottom: 16px;
+}
+
+.logo .icone {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--laranja);
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+}
+
+.logo h1 { font-size: 19px; font-weight: 700; letter-spacing: .5px; }
+.logo small { display: block; font-size: 11px; color: #d8c3b3; font-weight: 400; }
+
+aside nav { display: flex; flex-direction: column; gap: 4px; }
+
+aside nav button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  color: #d8c3b3;
+  padding: 11px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background .15s, color .15s;
+  text-align: left;
+}
+
+aside nav button:hover { background: rgba(255, 255, 255, .08); color: #fff; }
+aside nav button.ativo { background: var(--laranja); color: #fff; font-weight: 600; }
+aside nav button .icone-aba { font-size: 16px; }
+
+.rodape-sidebar {
+  margin-top: auto;
+  padding: 12px 8px 0;
+  font-size: 11px;
+  color: rgba(255, 255, 255, .45);
+}
+
+/* ---------- Conteudo ---------- */
+.conteudo { flex: 1; padding: 28px 32px; min-width: 0; }
+
+.topo-pagina {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.topo-pagina h2 { font-size: 22px; font-weight: 700; }
+.topo-pagina p { font-size: 13px; color: var(--texto-suave); margin-top: 2px; }
+
+.secao { display: none; }
+.secao.ativa { display: block; }
+
+/* ---------- Cards ---------- */
+.card {
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  overflow: hidden;
+}
+
+.card table { width: 100%; border-collapse: collapse; }
+.card th {
+  background: var(--creme);
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--texto-suave);
+  border-bottom: 1px solid var(--borda);
+}
+.card td { padding: 13px 16px; border-top: 1px solid var(--borda); font-size: 14px; }
+.card tbody tr:first-child td { border-top: none; }
+.card tbody tr:hover { background: #fdfaf5; }
+
+.destaque-td { font-weight: 600; }
+.suave { color: var(--texto-suave); }
+
+/* ---------- Badges ---------- */
+.tag {
+  display: inline-block;
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.tag.ativa        { background: var(--verde-claro); color: var(--verde-texto); }
+.tag.em-manutencao{ background: var(--amarelo-claro); color: var(--amarelo-texto); }
+.tag.inativa      { background: #efedea; color: var(--texto-suave); }
+.tag.aberta       { background: var(--amarelo-claro); color: var(--amarelo-texto); }
+.tag.em-andamento { background: var(--azul-claro); color: var(--azul-texto); }
+.tag.concluida    { background: var(--verde-claro); color: var(--verde-texto); }
+
+/* ---------- Botoes ---------- */
+button { cursor: pointer; border: none; border-radius: 8px; padding: 10px 16px; font-size: 14px; transition: filter .15s, transform .05s; }
+button:active { transform: scale(.98); }
+
+.btn-primario { background: var(--laranja); color: #fff; font-weight: 600; box-shadow: var(--sombra); }
+.btn-primario:hover { background: var(--laranja-escuro); }
+
+.btn-perigo {
+  background: transparent;
+  border: 1px solid #f0c4c4;
+  color: var(--vermelho);
+  padding: 6px 12px;
+  font-size: 13px;
+}
+.btn-perigo:hover { background: #fdeaea; }
+
+.btn-ok {
+  background: var(--verde);
+  color: #fff;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.btn-ok:hover { filter: brightness(.92); }
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--borda);
+  color: var(--texto-suave);
+  padding: 10px 16px;
+  font-size: 14px;
+}
+.btn-ghost:hover { background: #f5f0e8; }
+
+/* ---------- Dialogs ---------- */
+dialog {
+  margin: auto; /* centraliza (o reset * {margin:0} removia o auto padrao do browser) */
+  border: none;
+  border-radius: 14px;
+  padding: 0;
+  width: 440px;
+  max-width: 92vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(61, 31, 22, .35);
+}
+dialog::backdrop { background: rgba(61, 31, 22, .5); }
+
+.dialog-cabecalho {
+  background: var(--marrom);
+  color: #fff;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.dialog-corpo { padding: 22px 24px; }
+.dialog-corpo h3 { display: none; }
+
+.campo { display: block; margin-bottom: 14px; }
+.campo span {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  margin-bottom: 5px;
+}
+.campo input, .campo select, .campo textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fffdf9;
+  transition: border-color .15s, box-shadow .15s;
+}
+.campo input:focus, .campo select:focus, .campo textarea:focus {
+  outline: none;
+  border-color: var(--laranja);
+  box-shadow: 0 0 0 3px rgba(247, 127, 0, .15);
+}
+
+.acoes-dialog {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--borda);
+}
+
+/* ---------- Mensagem flutuante ---------- */
+#msg {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--marrom);
+  color: #fff;
+  padding: 13px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  display: none;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .25);
+  animation: entrar .25s ease;
+  z-index: 50;
+}
+#msg.erro { background: var(--vermelho); }
+
+@keyframes entrar {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.vazio { text-align: center; color: var(--texto-suave); padding: 44px 0; font-size: 14px; }
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 760px) {
+  body { flex-direction: column; }
+  aside { width: 100%; height: auto; flex-direction: row; align-items: center; padding: 12px 16px; }
+  .logo { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+  .logo small { display: none; }
+  aside nav { flex-direction: row; margin-left: auto; }
+  aside nav button { padding: 8px 10px; font-size: 13px; }
+  .rodape-sidebar { display: none; }
+  .conteudo { padding: 20px 16px; }
+  .card { overflow-x: auto; }
+}

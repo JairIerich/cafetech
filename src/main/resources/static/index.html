@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cafetech — Clientes e Máquinas</title>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+</head>
+<body>
+
+<aside>
+  <div class="logo">
+    <div class="icone">☕</div>
+    <div>
+      <h1>Cafetech</h1>
+      <small>cadastro e manutenção</small>
+    </div>
+  </div>
+  <nav>
+    <button data-aba="clientes" class="ativo"><span class="icone-aba">👥</span> Clientes</button>
+    <button data-aba="maquinas"><span class="icone-aba">☕</span> Máquinas</button>
+    <button data-aba="manutencoes"><span class="icone-aba">🔧</span> Manutenções</button>
+  </nav>
+  <div class="rodape-sidebar">Spring Boot 3 · MySQL · v1.0</div>
+</aside>
+
+<main class="conteudo">
+
+  <section id="clientes" class="secao ativa">
+    <div class="topo-pagina">
+      <div>
+        <h2>Clientes</h2>
+        <p>Cafeterias, restaurantes e escritórios atendidos</p>
+      </div>
+      <button class="btn-primario" onclick="abrirDialogCliente()">+ Novo cliente</button>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Cadastro</th><th></th></tr></thead>
+        <tbody id="lista-clientes"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="maquinas" class="secao">
+    <div class="topo-pagina">
+      <div>
+        <h2>Máquinas</h2>
+        <p>Equipamentos instalados nos clientes</p>
+      </div>
+      <button class="btn-primario" onclick="abrirDialogMaquina()">+ Nova máquina</button>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr><th>Modelo</th><th>Nº de série</th><th>Cliente</th><th>Status</th><th></th></tr></thead>
+        <tbody id="lista-maquinas"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="manutencoes" class="secao">
+    <div class="topo-pagina">
+      <div>
+        <h2>Manutenções</h2>
+        <p>Ordens de serviço preventivas e corretivas</p>
+      </div>
+      <button class="btn-primario" onclick="abrirDialogManutencao()">+ Abrir manutenção</button>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr><th>Máquina</th><th>Descrição</th><th>Tipo</th><th>Status</th><th>Abertura</th><th>Ações</th></tr></thead>
+        <tbody id="lista-manutencoes"></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<dialog id="dialog-cliente">
+  <div class="dialog-cabecalho">Novo cliente</div>
+  <div class="dialog-corpo">
+    <h3>Novo cliente</h3>
+    <label class="campo"><span>Nome *</span><input id="cli-nome"></label>
+    <label class="campo"><span>E-mail *</span><input id="cli-email" type="email"></label>
+    <label class="campo"><span>Telefone</span><input id="cli-telefone"></label>
+    <label class="campo"><span>Endereço</span><input id="cli-endereco"></label>
+  </div>
+  <div class="acoes-dialog">
+    <button class="btn-ghost" onclick="fecharDialogs()">Cancelar</button>
+    <button class="btn-primario" onclick="salvarCliente()">Salvar</button>
+  </div>
+</dialog>
+
+<dialog id="dialog-maquina">
+  <div class="dialog-cabecalho">Nova máquina</div>
+  <div class="dialog-corpo">
+    <h3>Nova máquina</h3>
+    <label class="campo"><span>Modelo *</span><input id="maq-modelo"></label>
+    <label class="campo"><span>Nº de série *</span><input id="maq-serie"></label>
+    <label class="campo"><span>Data de aquisição</span><input id="maq-data" type="date"></label>
+    <label class="campo"><span>Cliente *</span><select id="maq-cliente"></select></label>
+  </div>
+  <div class="acoes-dialog">
+    <button class="btn-ghost" onclick="fecharDialogs()">Cancelar</button>
+    <button class="btn-primario" onclick="salvarMaquina()">Salvar</button>
+  </div>
+</dialog>
+
+<dialog id="dialog-manutencao">
+  <div class="dialog-cabecalho">Abrir manutenção</div>
+  <div class="dialog-corpo">
+    <h3>Abrir manutenção</h3>
+    <label class="campo"><span>Máquina *</span><select id="man-maquina"></select></label>
+    <label class="campo"><span>Descrição *</span><textarea id="man-descricao" rows="3"></textarea></label>
+    <label class="campo"><span>Tipo *</span>
+      <select id="man-tipo">
+        <option value="PREVENTIVA">Preventiva</option>
+        <option value="CORRETIVA">Corretiva</option>
+      </select>
+    </label>
+    <label class="campo"><span>Técnico</span><input id="man-tecnico"></label>
+  </div>
+  <div class="acoes-dialog">
+    <button class="btn-ghost" onclick="fecharDialogs()">Cancelar</button>
+    <button class="btn-primario" onclick="salvarManutencao()">Abrir</button>
+  </div>
+</dialog>
+
+<div id="msg"></div>
+
+<script>
+const API = "";
+
+async function api(url, opcoes) {
+  const resposta = await fetch(API + url, {
+    headers: { "Content-Type": "application/json" },
+    ...opcoes,
+  });
+  if (!resposta.ok) {
+    let texto = resposta.statusText;
+    try {
+      const corpo = await resposta.json();
+      if (Array.isArray(corpo) && corpo.length) {
+        texto = corpo.map(e => `${e.campo}: ${e.mensagem}`).join(" / ");
+      } else if (typeof corpo === "string") {
+        texto = corpo;
+      }
+    } catch (e) { /* corpo sem json */ }
+    throw new Error(texto);
+  }
+  if (resposta.status === 204) return null;
+  return resposta.json();
+}
+
+function avisar(texto, erro = false) {
+  const msg = document.getElementById("msg");
+  msg.textContent = texto;
+  msg.className = erro ? "erro" : "";
+  msg.style.display = "block";
+  setTimeout(() => msg.style.display = "none", 4000);
+}
+
+async function carregarClientes() {
+  const pagina = await api("/clientes");
+  const lista = document.getElementById("lista-clientes");
+  lista.innerHTML = pagina.content.length === 0
+    ? `<tr><td colspan="5" class="vazio">Nenhum cliente cadastrado ainda</td></tr>`
+    : pagina.content.map(c => `
+      <tr>
+        <td class="destaque-td">${c.nome}</td>
+        <td>${c.email}</td>
+        <td>${c.telefone ?? '<span class="suave">—</span>'}</td>
+        <td class="suave">${formatarData(c.dataCadastro)}</td>
+        <td><button class="btn-perigo" onclick="excluirCliente(${c.id})">Excluir</button></td>
+      </tr>`).join("");
+}
+
+async function salvarCliente() {
+  const dados = {
+    nome: valor("cli-nome"),
+    email: valor("cli-email"),
+    telefone: valor("cli-telefone"),
+    endereco: valor("cli-endereco"),
+  };
+  try {
+    await api("/clientes", { method: "POST", body: JSON.stringify(dados) });
+    fecharDialogs();
+    avisar("Cliente cadastrado!");
+    await carregarClientes();
+  } catch (e) { avisar(e.message, true); }
+}
+
+async function excluirCliente(id) {
+  if (!confirm("Excluir este cliente?")) return;
+  try {
+    await api("/clientes/" + id, { method: "DELETE" });
+    avisar("Cliente excluído!");
+    await carregarClientes();
+  } catch (e) { avisar(e.message, true); }
+}
+
+async function carregarMaquinas() {
+  const [pagina, clientes] = await Promise.all([api("/maquinas"), api("/clientes")]);
+  const lista = document.getElementById("lista-maquinas");
+  lista.innerHTML = pagina.content.length === 0
+    ? `<tr><td colspan="5" class="vazio">Nenhuma máquina cadastrada ainda</td></tr>`
+    : pagina.content.map(m => `
+      <tr>
+        <td class="destaque-td">${m.modelo}</td>
+        <td><span class="suave">${m.numeroSerie}</span></td>
+        <td>${m.nomeCliente}</td>
+        <td><span class="tag ${m.status.toLowerCase()}">${rotuloStatus(m.status)}</span></td>
+        <td><button class="btn-perigo" onclick="excluirMaquina(${m.id})">Excluir</button></td>
+      </tr>`).join("");
+  const select = document.getElementById("maq-cliente");
+  select.innerHTML = clientes.content.map(c => `<option value="${c.id}">${c.nome}</option>`).join("");
+}
+
+async function salvarMaquina() {
+  const dados = {
+    modelo: valor("maq-modelo"),
+    numeroSerie: valor("maq-serie"),
+    dataAquisicao: valor("maq-data") || null,
+    clienteId: Number(valor("maq-cliente")),
+  };
+  try {
+    await api("/maquinas", { method: "POST", body: JSON.stringify(dados) });
+    fecharDialogs();
+    avisar("Máquina cadastrada!");
+    await carregarMaquinas();
+  } catch (e) { avisar(e.message, true); }
+}
+
+async function excluirMaquina(id) {
+  if (!confirm("Excluir esta máquina?")) return;
+  try {
+    await api("/maquinas/" + id, { method: "DELETE" });
+    avisar("Máquina excluída!");
+    await carregarMaquinas();
+  } catch (e) { avisar(e.message, true); }
+}
+
+async function carregarManutencoes() {
+  const [pagina, maquinas] = await Promise.all([api("/manutencoes"), api("/maquinas")]);
+  const lista = document.getElementById("lista-manutencoes");
+  lista.innerHTML = pagina.content.length === 0
+    ? `<tr><td colspan="6" class="vazio">Nenhuma manutenção registrada ainda</td></tr>`
+    : pagina.content.map(m => `
+      <tr>
+        <td class="destaque-td">${m.modeloMaquina}</td>
+        <td>${m.descricao}</td>
+        <td>${m.tipo === "CORRETIVA" ? "Corretiva" : "Preventiva"}</td>
+        <td><span class="tag ${m.status.toLowerCase().replace("_", "-")}">${rotuloStatusManutencao(m.status)}</span></td>
+        <td class="suave">${formatarData(m.dataAbertura)}</td>
+        <td>${acoesManutencao(m)}</td>
+      </tr>`).join("");
+  const select = document.getElementById("man-maquina");
+  select.innerHTML = maquinas.content
+    .filter(m => m.status !== "INATIVA")
+    .map(m => `<option value="${m.id}">${m.modelo} (${m.numeroSerie})</option>`).join("");
+}
+
+function acoesManutencao(m) {
+  if (m.status === "ABERTA") {
+    return `<button class="btn-ok" onclick="iniciarManutencao(${m.id})">Iniciar</button>`;
+  }
+  if (m.status === "EM_ANDAMENTO") {
+    return `<button class="btn-ok" onclick="concluirManutencao(${m.id})">Concluir</button>`;
+  }
+  return `<span class="suave">—</span>`;
+}
+
+async function iniciarManutencao(id) {
+  try {
+    await api("/manutencoes/andamento", { method: "PUT", body: JSON.stringify({ id }) });
+    avisar("Manutenção em andamento!");
+    await carregarManutencoes();
+  } catch (e) { avisar(e.message, true); }
+}
+
+async function concluirManutencao(id) {
+  try {
+    await api("/manutencoes/conclusao", { method: "PUT", body: JSON.stringify({ id }) });
+    avisar("Manutenção concluída!");
+    await carregarManutencoes();
+  } catch (e) { avisar(e.message, true); }
+}
+
+async function salvarManutencao() {
+  const dados = {
+    maquinaId: Number(valor("man-maquina")),
+    descricao: valor("man-descricao"),
+    tipo: valor("man-tipo"),
+    tecnico: valor("man-tecnico"),
+  };
+  try {
+    await api("/manutencoes", { method: "POST", body: JSON.stringify(dados) });
+    fecharDialogs();
+    avisar("Manutenção aberta!");
+    await carregarManutencoes();
+  } catch (e) { avisar(e.message, true); }
+}
+
+function abrirDialogCliente() { document.getElementById("dialog-cliente").showModal(); }
+function abrirDialogMaquina() {
+  carregarClientes(); // recarrega o select de clientes antes de abrir
+  document.getElementById("dialog-maquina").showModal();
+}
+function abrirDialogManutencao() {
+  carregarMaquinas(); // recarrega o select de maquinas antes de abrir
+  document.getElementById("dialog-manutencao").showModal();
+}
+function fecharDialogs() { document.querySelectorAll("dialog").forEach(d => d.close()); }
+function valor(id) { return document.getElementById(id).value.trim(); }
+function formatarData(iso) { return iso ? iso.split("-").reverse().join("/") : "—"; }
+function rotuloStatus(s) { return { ATIVA: "Ativa", EM_MANUTENCAO: "Em manutenção", INATIVA: "Inativa" }[s]; }
+function rotuloStatusManutencao(s) {
+  return { ABERTA: "Aberta", EM_ANDAMENTO: "Em andamento", CONCLUIDA: "Concluída" }[s];
+}
+
+document.querySelectorAll("aside nav button").forEach(botao => {
+  botao.addEventListener("click", () => {
+    document.querySelectorAll("aside nav button").forEach(b => b.classList.remove("ativo"));
+    document.querySelectorAll(".secao").forEach(s => s.classList.remove("ativa"));
+    botao.classList.add("ativo");
+    document.getElementById(botao.dataset.aba).classList.add("ativa");
+  });
+});
+
+carregarClientes();
+carregarMaquinas();
+carregarManutencoes();
+</script>
+</body>
+</html>
